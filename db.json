@@ -1,0 +1,108 @@
+{
+  "dg_Produits": [
+    {
+      "libelle": "Jotnadd",
+      "code": "ddJ22",
+      "id": 1
+    },
+    {
+      "id": 2,
+      "libelle": "Poste Cash",
+      "code": "455J22"
+    },
+    {
+      "id": 3,
+      "libelle": "Wave ",
+      "code": "gfhfDD"
+    },
+    {
+      "libelle": "ssdd",
+      "code": "sddsds",
+      "id": 4
+    },
+    {
+      "libelle": "ds",
+      "code": "4dd",
+      "id": 5
+    }
+  ],
+  "dg_Services": [
+    {
+      "libelle": "Service 1",
+      "id": 1
+    },
+    {
+      "id": 2,
+      "libelle": "Service 2"
+    },
+    {
+      "id": 3,
+      "libelle": "Service 3 "
+    }
+  ],
+  "dg_Procs": [
+    {
+      "libelle": "Processus 1",
+      "code": "dd5d",
+      "id": 1
+    },
+    {
+      "id": 2,
+      "code": "45dd45J22",
+      "libelle": "Processus 2"
+    },
+    {
+      "id": 3,
+      "code": "dd45d",
+      "libelle": "Processus 3 "
+    }
+  ],
+  "produitprocessuss": [
+    {
+      "id": 1,
+      "dg_ProduitId": 1,
+      "dg_ProcId": 2
+    },
+    {
+      "id": 2,
+      "dg_ProduitId": 1,
+      "dg_ProcId": 1
+    },
+    {
+      "id": 3,
+      "dg_ProduitId": 2,
+      "dg_ProcId": 3
+    },
+    {
+      "id": 4,
+      "dg_ProduitId": 2,
+      "dg_ProcId": 1
+    }
+  ],
+  "produitserviceassociations": [
+    {
+      "id": 1,
+      "dg_ProduitId": 1,
+      "dg_ServiceId": 3,
+      "coefficient": 2
+    },
+    {
+      "id": 2,
+      "dg_ProduitId": 1,
+      "dg_ServiceId": 1,
+      "coefficient": 3
+    },
+    {
+      "id": 3,
+      "dg_ProduitId": 3,
+      "dg_ServiceId": 3,
+      "coefficient": 2
+    },
+    {
+      "id": 4,
+      "dg_ProduitId": 2,
+      "dg_ServiceId": 1,
+      "coefficient": 2
+    }
+  ]
+}

@@ -1,0 +1,230 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+
+
+            <p-toast  position="center" ></p-toast>
+
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple type="button" label="Nouveau" icon="pi pi-plus"  class="p-button-success" (click)="openNew()"></button>
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="right">
+
+                    <button pButton pRipple label="Export PDF" icon="pi pi-upload" class="p-button-primary mr-2 " (click)="dt.exportCSV()"></button>
+                    <button pButton pRipple label="Export Excel " icon="pi pi-upload" class="p-button-success" (click)="dt.exportCSV()"></button>
+
+                </ng-template>
+            </p-toolbar>
+
+            <p-progressSpinner *ngIf="loading" [style]="{width: '50px', height: '50px'}" styleClass="custom-spinner" strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s"></p-progressSpinner>
+
+
+            <p-table #dt [value]="structures" [columns]="cols" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['libelle','adresse','email','telephone','code','codepostal','codeips','dg_drp.libelle','dg_typeStructure.libelle']"
+                     [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Affichage des {first} aux {last}èmes des  {totalRecords} entrées"
+                     [(selection)]="selectedProducts" selectionMode="multiple" [rowHover]="true" dataKey="id" sortField="dg_drp.id" [sortOrder]="1" >
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0"><i></i><i class="pi pi-list"></i>Liste de toutes les Bureaux de Poste   </h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Rechercher..." />
+                        </span>
+
+                        <span>
+
+                            <p-dropdown id="drp_filter" [options]="listDrps" optionLabel="libelle" [(ngModel)]="selectedDrp" (onChange)="selectDrp()" placeholder="Filtrer Drp...">
+                            </p-dropdown>
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+
+                        <th pSortableColumn="dg_drp.libelle">DRP <p-sortIcon field="dg_drp.libelle"></p-sortIcon></th>
+                        <th pSortableColumn="libelle">Libelle <p-sortIcon field="libelle"></p-sortIcon></th>
+                        <th pSortableColumn="adresse">Adresse <p-sortIcon field="adresse"></p-sortIcon></th>
+                        <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+                        <th pSortableColumn="telephone">Telephone <p-sortIcon field="telephone"></p-sortIcon></th>
+                        <th pSortableColumn="code">Code <p-sortIcon field="code"></p-sortIcon></th>
+                        <th pSortableColumn="codepostal">Code Postal <p-sortIcon field="code"></p-sortIcon></th>
+                        <th pSortableColumn="codeips">Code IPS <p-sortIcon field="codeips"></p-sortIcon></th>
+
+
+
+
+
+                        <th>Actions</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-structure>
+                    <tr>
+
+                        <td style="min-width:10rem;">
+                            <span class="p-column-title">TypeStructure</span>
+                            {{structure.dg_drp.libelle}}
+                        </td>
+                        <td style="min-width:10rem;"><span class="p-column-title">Libelle</span>
+                            {{structure.libelle}}
+                        </td>
+                        <td style="min-width:10rem;">
+                            <span class="p-column-title">Adresse</span>
+                            {{structure.adresse}}
+                        </td>
+                        <td style="min-width:8rem;">
+                            <span class="p-column-title">Email</span>
+                            {{structure.email}}
+                        </td>
+                        <td style="min-width:10rem;">
+                            <span class="p-column-title">Telephone</span>
+                            {{structure.telephone}}
+                        </td>
+                        <td style="min-width:10rem;">
+                            <span class="p-column-title">Code</span>
+                            {{structure.code}}
+                        </td>
+                        <td style="min-width:10rem;">
+                            <span class="p-column-title">Code Postal</span>
+                            {{structure.codepostal}}
+                        </td>
+                        <td style="min-width:10rem;">
+                            <span class="p-column-title">Code Ips</span>
+                            {{structure.codeips}}
+                        </td>
+
+
+
+
+                        <td>
+                            <div class="flex">
+                                <button pButton pRipple type="button" label="Annexe(s)"  class="p-button-success" (click)="op2.toggle($event)" (click)="gotoAffecterAnnexeComponent(structure)"></button>&nbsp;
+                                <button pButton type="button" label="Modifier" class="p-button-warning" (click)="editProduct(structure)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog [(visible)]="structureDialog" [style]="{width: '1000px;'}" header="Détails Structure" [modal]="true" class="p-fluid" maximizable="true">
+            <h6 align="right"><span style="color: red"> *</span> Champs Obligatoires</h6>
+            <ng-template pTemplate="content">
+
+
+                <div class="p-formgrid grid">
+                <div class="field col ">
+                    <label for="libelle">Libelle <span style="color: red"> *</span></label>
+                    <input type="text" pInputText id="libelle" [(ngModel)]="structure.libelle" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !structure.libelle}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !structure.libelle">Libelle est obligatoire.</small>
+                </div>
+                <div class="field col">
+                    <label for="adresse">Adresse <span style="color: red"> *</span></label>
+                    <textarea pInputTextarea id="adresse"  [(ngModel)]="structure.adresse" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !structure.adresse}"></textarea>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !structure.adresse">Adresse est obligatoire.</small>
+                </div>
+                </div>
+
+                <div class="p-formgrid grid">
+                <div class="field col ">
+                    <label for="email">Email </label>
+                    <input type="text" pInputText id="email" [(ngModel)]="structure.email" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !structure.email}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !structure.email">Email est obligatoire.</small>
+                </div>
+                <div class="field col">
+                    <label for="telephone">Téléphone</label>
+                    <input type="text" pInputText id="telephone" [(ngModel)]="structure.telephone" pattern="[0-9]{5}" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !structure.telephone}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !structure.telephone">Telephone doit comporter 9 chiffres</small>
+                </div>
+                </div>
+
+                <div class="p-formgrid grid">
+                <div class="field col ">
+                    <label for="code">Code <span style="color: red"> *</span></label>
+                    <input type="text" pInputText id="code" [(ngModel)]="structure.code" pattern="[0-9]{5}" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !structure.code}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !structure.code" >Code est obligatoire et doit comporter 5 chifffres.</small>
+                </div>
+                <div class="field col">
+                    <label for="codepostal">Code Postal </label>
+                    <input type="text" pInputText id="codeposal" [(ngModel)]="structure.codepostal"  pattern="[0-9]{5}" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !structure.codepostal}"/>
+
+                </div>
+                </div>
+                <div class="p-formgrid grid">
+                <div class="field col">
+                    <label for="codeips">Code IPS</label>
+                    <input type="text" pInputText id="codeips" [(ngModel)]="structure.codeips" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !structure.codeips}"/>
+                </div>
+
+                <div class="field col">
+                    <label for="DRP">DRP <span style="color: red"> *</span></label>
+                    <p-dropdown appendTo="body" id="drp" [options]="listDrps" optionLabel="libelle" [(ngModel)]="structure.dg_drp" placeholder="Drp...">
+                    </p-dropdown>
+
+
+                </div>
+                </div>
+
+
+
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+
+                <button pButton pRipple type="button" label="Enregistrer" icon="pi pi-check"  class="p-button-success"  (click)="saveProduct()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deleteProductDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span *ngIf="product">Are you sure you want to delete <b>{{product.name}}</b>?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteProductDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDelete()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deleteProductsDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span>Are you sure you want to delete selected products?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteProductsDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDeleteSelected()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-overlayPanel #op2 [showCloseIcon]="true" [style]="{width: '450px'}">
+
+            <h5>Liste annexes</h5>
+            <ng-template pTemplate>
+                <p-table [value]="selectedStructure" selectionMode="single"  [paginator]="true" [rows]="5" (onRowSelect)="op2.hide()" responsiveLayout="scroll">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th pSortableColumn="annexe.libelle">Libelle<p-sortIcon field="annexe.libelle"></p-sortIcon></th>
+                            <th pSortableColumn="annexe.telephone">Telephone <p-sortIcon field="annexe.telephone"></p-sortIcon></th>
+                            <th pSortableColumn="annexe.adresse">Adresse <p-sortIcon field="annexe.adresse"></p-sortIcon></th>
+                            <th pSortableColumn="annexe.email">Email <p-sortIcon field="annexe.email"></p-sortIcon></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-structure>
+                        <tr >
+                            <td style="min-width: 10rem;">{{structure.annexe.libelle}}</td>
+
+                            <td style="min-width: 10rem;">{{structure.annexe.telephone}}</td>
+                            <td style="min-width: 10rem;">{{structure.annexe.adresse}}</td>
+                            <td style="min-width: 10rem;">{{structure.annexe.email}}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </ng-template>
+        </p-overlayPanel>
+
+    </div>
+</div>
+

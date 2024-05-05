@@ -1,0 +1,235 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <p-toast></p-toast>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label="Nouveau" icon="pi pi-plus" class="p-button-primary mr-2" (click)="openNew()"></button>
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="right">
+                    <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload>
+                    <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="dt.exportCSV()"></button>
+                </ng-template>
+            </p-toolbar>
+
+            <p-table #dt [value]="processuss"  responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['id','libelle','code','codep']" [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Affichage des {first} aux {last} of {totalRecords} entrées"  [rowHover]="true" dataKey="id">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Liste des processuss</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Rechercher..." />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                
+                        <th pSortableColumn="libelle">Libelle <p-sortIcon field="libelle"></p-sortIcon></th>
+                        <th pSortableColumn="code">code <p-sortIcon field="code"></p-sortIcon></th>
+                        <th pSortableColumn="codep">code Processus <p-sortIcon field="codep"></p-sortIcon></th>
+                       
+                       
+                        <th></th>
+                        <th>Action</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-processus>
+                    <tr>
+                          <td span style="width:14%; min-width:20rem;">
+                            <span class="p-column-title">Libelle</span>
+                            <span  *ngIf="processus.libelle !=undefined">
+                            {{processus.libelle}}
+                           </span>
+                            </td>
+                           <td style="width:14%; min-width:10rem;">
+                            <span  class="p-column-title">Code</span>
+                            <span  *ngIf="processus.code !=undefined">
+                            {{processus.code}}
+                            </span>
+                            </td>
+                            <td style="width:14%; min-width:10rem;">
+                                <span class="p-column-title">code Processus</span>
+                                <span  *ngIf="processus.codep !=undefined">
+                                {{processus.codep}}
+                                </span>
+                             </td>
+                           
+                       
+                        <td style="width:14%; min-width:10rem">
+                          
+                                
+                                <button pButton class="p-button-secondary" pRipple type="button" label="Modifier" (click)="editprocessus(processus)"></button>
+                        </td>
+                          
+                        <td >
+                            <span>
+                                <button pButton class="p-button-rounded p-button-success mr-2 mb-2" pRipple type="button" label="Voir Produit"   (click)="op2.toggle($event)" (click)="haveAllProduitByProcessus(processus)"></button>
+
+                            </span>
+                          <span>
+                            <button pButton pRipple type="button" label="Ajouter"   (click)="openNew3(processus)" 
+                            class="p-button-rounded p-button-primary mr-2 mb-2"  ></button>
+                       
+                          </span>
+                        
+                        </td>  
+                 
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog [(visible)]="processusDialog" [style]="{width: '900px'}" header="Détails processuss" [modal]="true" class="p-fluid">
+            <ng-template pTemplate="content">
+
+            <div class="field">
+                <label for="code">Code </label>
+                <input type="text" pInputText  [(ngModel)]="code" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !processus.code}"/>
+                <small class="ng-dirty ng-invalid" *ngIf="submitted && !processus.code">Code  obligatoire.</small>
+            </div>
+           
+            <div class="field">
+                <label for="libelle">Libelle</label>
+                <input type="text" pInputText  [(ngModel)]="libelle" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !processus.libelle}"/>
+                <small class="ng-dirty ng-invalid" *ngIf="submitted && !processus.libelle">libelle obligatoire.</small>
+
+            </div>
+            
+            <div class="field">
+                <label for="codep">Code Processus</label>
+                <input type="text" pInputText  [(ngModel)]="codep" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !processus.codep}"/>
+                <small class="ng-dirty ng-invalid" *ngIf="submitted && !processus.codep">Code Processus obligatoire.</small>
+
+            </div>
+            </ng-template>
+            <ng-template pTemplate="footer">
+
+            
+
+
+            <tr>
+                
+                <th>
+                    <button pButton pRipple type="button" label="Enregistrer" (click)="onSubmit()"></button>
+                </th>
+                
+                <th>
+                    <button type="submit" pButton pRipple type="button"  md="gap-4" xl="gap-8" label="Annuler" (click)="hideDialog()" class="p-button-danger"></button>  
+                </th>
+            </tr>
+           
+           
+            </ng-template>
+</p-dialog>
+<p-dialog [(visible)]="editDialog" [style]="{width: '900px'}" header="Modifier Processuss" [modal]="true" class="p-fluid">
+    <ng-template pTemplate="content">
+
+    <div class="field">
+        <label for="code">Code </label>
+        <input type="text" pInputText  [(ngModel)]="processus.code" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !processus.code}"/>
+        <small class="ng-dirty ng-invalid" *ngIf="submitted && !processus.code">Code  obligatoire.</small>
+    </div>
+   
+    <div class="field">
+        <label for="libelle">Libelle</label>
+        <input type="text" pInputText  [(ngModel)]="processus.libelle" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !processus.libelle}"/>
+        <small class="ng-dirty ng-invalid" *ngIf="submitted && !processus.libelle">libelle obligatoire.</small>
+
+    </div>
+    
+    <div class="field">
+        <label for="codep">Code Processus</label>
+        <input type="text" pInputText  [(ngModel)]="processus.codep" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !processus.codep}"/>
+        <small class="ng-dirty ng-invalid" *ngIf="submitted && !processus.codep">Code Processus obligatoire.</small>
+
+    </div>
+
+    </ng-template>
+    <ng-template pTemplate="footer">
+
+
+
+
+    <tr>
+        
+        <th>
+            <button pButton pRipple type="button" label="Enregistrer" (click)="modifierProcessus(processus)"></button>
+        </th>
+        
+        <th>
+            <button type="submit" pButton pRipple type="button"  md="gap-4" xl="gap-8" label="Annuler" (click)="hideDialog()" class="p-button-danger"></button>  
+        </th>
+    </tr>
+    </ng-template>
+</p-dialog>
+
+<p-overlayPanel #op2 [showCloseIcon]="true" [style]="{width: '800px'}">
+
+    <h2 style="background-color: blue;text-align: center;color: aliceblue;">Liste Produits</h2>
+    <ng-template pTemplate>
+        <p-table [value]="produitByProcess" selectionMode="single"  [paginator]="true" [rows]="5" (onRowSelect)="op2.hide()" responsiveLayout="scroll">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="processusByProd.libelle">Libelle<p-sortIcon ></p-sortIcon></th>
+                    <th pSortableColumn="processusByProd.code">Code Produit<p-sortIcon ></p-sortIcon></th>
+                    <th pSortableColumn="processusByProd.code">Coefficient<p-sortIcon ></p-sortIcon></th>
+                    <th pSortableColumn="processusByProd.code">Type Produit<p-sortIcon ></p-sortIcon></th>
+
+
+
+
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-prod>
+                <tr >
+                   
+                    <td style="min-width: 10rem;">{{prod.dg_produitAna.libelle}}</td>
+                    <td style="min-width: 10rem;">{{prod.dg_produitAna.codeProduit}}</td>
+                    <td style="min-width: 10rem;">{{prod.dg_produitAna.coefficient}}</td>
+                    <td style="min-width: 10rem;">{{prod.dg_produitAna.dg_typeproduit.libelle}}</td>
+
+
+
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteProduit(prod)"></button>
+                  
+                </tr>
+                <td>
+
+                </td>
+            </ng-template>
+        </p-table>
+    </ng-template>
+</p-overlayPanel>
+
+<p-dialog [(visible)]="deleteProductDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+    <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+        <span *ngIf="produit" ><span style="color:red;">Est-Vous Sûr De Vouloir Supprimé Ce Produit</span> :<br> <b>{{produit.dg_produitAna.libelle}}</b>?</span>
+    </div>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Non" (click)="deleteProductDialog = false"></button>
+        <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Oui" (click)="confirmDelete()"></button>
+    </ng-template>
+</p-dialog>
+<p-dialog [(visible)]="produitDialog" [style]="{width: '900px'}" header="Ajouter Processus" [modal]="true" class="p-fluid">
+    <p-listbox [options]="produits"  [metaKeySelection]="true" optionValue="id" [checkbox]="true" [filter]="true" [multiple]="true" optionLabel="libelle" [(ngModel)]="selectedProduit">         
+    </p-listbox>
+    <table>
+        <tr>
+            <th>
+                <button pButton pRipple type="button" label="Enregistrer" (click)="saveAllProcessusByProd(selectedProduit)"></button>
+            </th>
+            
+            <th>
+                <button type="submit" pButton pRipple type="button" label="Annuler" (click)="hideDialog()" class="p-button-secondary"></button>  
+            </th>
+        </tr>
+       
+    </table>
+    </p-dialog>
+    </div>
+</div>

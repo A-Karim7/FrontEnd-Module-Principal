@@ -1,0 +1,382 @@
+
+<p-confirmDialog [style]="{width: '50vw'}" [baseZIndex]="10000" rejectButtonStyleClass="p-button-text"></p-confirmDialog>
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+
+            <mat-stepper linear #stepper>
+
+                <mat-step [stepControl]=""  *ngIf="findRole(['ROLE_SUPERADMIN'])" completed="false" label="Choisir DRP " editable="false">
+
+                   <h3 class="bg-gray-200 p-3" >Veuillez Selectionner une Drp</h3>
+
+                    <!-- <div class="p-fluid">
+                        <p-autoComplete placeholder="Recherche" id="drps" [dropdown]="true" [multiple]="false"
+                        [suggestions]="listdrpfiltre" (completeMethod)="filterDrp($event)" field="libelle"  [(ngModel)]="drpchoisi"></p-autoComplete>
+                        <small *ngIf="(submitted)" class="p-error">Selectionnez une Drp.</small>
+                    </div> -->
+                    <div class="field col-12 md:col-8">
+                        <p-dropdown inputId="dropdown" appendTo="body" [autoDisplayFirst]="false" [options]="templistdrp " [(ngModel)]="drpchoisi" optionLabel="libelle" class="ng-invalid ng-dirty" placeholder="Selectionner">
+
+                        </p-dropdown>
+                    </div>
+                    <br><br>
+                    <div class="grid grid-nogutter justify-content-end">
+
+                        <button mat-raised-button  color="primary" (click)="choixDrp()" [disabled]="drpchoisi==null">Suivant </button>
+                    </div>
+
+                    </mat-step>
+
+                <mat-step [stepControl]="" *ngIf="findRole(['ROLE_SUPERADMIN','ROLE_DRP'])"  completed="false" label="Choisir Structure " editable="false">
+
+                   <h3 class="bg-gray-200 p-3" >{{drpchoisi?.libelle}} </h3>
+
+                    <p> Veuillez choisir une structure</p>
+                    <div class="p-fluid">
+                        <p-autoComplete placeholder="Recherche" appendTo="body" id="structures" [dropdown]="true" [multiple]="false"
+                            [suggestions]="liststructurefiltre" (completeMethod)="filterStructure($event)"  field="libelle" [(ngModel)]="structurechoisi"></p-autoComplete>
+                        <small *ngIf="(submitted)" class="p-error">Selectionnez une structure.</small>
+                    </div>
+                    <!-- <div class="field col-12 md:col-8">
+                        <p-dropdown inputId="dropdown" appendTo="body" [autoDisplayFirst]="false" [options]="liststructure " [(ngModel)]="structurechoisi" optionLabel="libelle" class="ng-invalid ng-dirty" placeholder="Selectionner">
+
+                        </p-dropdown>
+                    </div> -->
+                    
+                    <br><br>
+                    <div class="grid grid-nogutter justify-content-end">
+                        <button *ngIf="isDrp==false" mat-raised-button matStepperNext (click)="resetStepper()"  color="warn">Retour </button>
+
+                        <button mat-raised-button matStepperNext (click)="choixStructure()"  color="primary" [disabled]="structurechoisi==null">Suivant </button>
+                    </div>
+
+                </mat-step>
+                <mat-step [stepControl]="" *ngIf="findRole(['ROLE_SUPERADMIN', 'ROLE_DRP', 'ROLE_RECEVEUR','ROLE_RESPONSABLE_ANNEXE', 'ROLE_GRANDECAISSE'])"  label="Liste des Caisses" editable="false">
+
+
+
+                    <p-toast key="ab"></p-toast>
+                    <p-toolbar styleClass="mb-4">
+
+                    </p-toolbar>
+
+                    <p-table #dt [value]="caisses" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+                        [globalFilterFields]="['libelle','dg_typeCaisse.libelle','dg_structure.libelle','dg_user.nom + dg_user.prenom ']"
+                        [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+                        currentPageReportTemplate="Affichage des {first} aux {last}èmes des  {totalRecords} entrées"
+                        [(selection)]="selectedProducts" selectionMode="multiple" [rowHover]="true" dataKey="id">
+                        <ng-template pTemplate="caption">
+                            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                                <h3 class="m-0">Liste des Caisses {{structurechoisi?.libelle}}   ---   {{structurechoisi?.dg_drp.libelle}}</h3>
+                                <span class="block mt-2 md:mt-0 p-input-icon-left">
+                                    <i class="pi pi-search"></i>
+                                    <input pInputText type="text"
+                                        (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                        placeholder="Rechercher..." />
+                                </span>
+
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="header">
+                            <tr>
+
+                                <th pSortableColumn="libelle">Libelle <p-sortIcon field="libelle"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="dg_typeCaisse.libelle">Type Caisse <p-sortIcon
+                                        field="dg_typeCaisse.libelle"></p-sortIcon>
+                                </th>
+
+                                <th pSortableColumn="dg_user.nom + dg_user.prenom">Agents <p-sortIcon
+                                        field="dg_user.nom + dg_user.prenom"></p-sortIcon>
+                                </th>
+
+
+                                <th>Actions</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-caiss>
+                            <tr>
+
+                                <td style="min-width:10rem;"><span class="p-column-title">Libelle</span>
+                                    {{caiss.libelle}}
+                                </td>
+                                <td style="min-width:10rem;">
+                                    <span class="p-column-title">TypeCaisse</span>
+                                    {{caiss.dg_typeCaisse.libelle}}
+                                </td>
+
+                                <td style="min-width:10rem;">
+                                    <span class="p-column-title">Utilisateur</span>
+                                    <span *ngIf="caiss.dg_user != undefined">
+                                        {{caiss.dg_user.nom}} &nbsp; {{caiss.dg_user.prenom}}
+                                    </span>
+
+                                    <span *ngIf="caiss.dg_user ==undefined">
+                                        <p-tag styleClass="mr-12" severity="warning" value=" Non Attribuée">
+                                        </p-tag>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="flex">
+
+                                        <span *ngIf="caiss.dg_user ==undefined">
+                                            <button pButton pRipple icon="pi pi-pencil" label="Attribution"
+                                                class="p-button-secondary mr-2 mb-2"
+                                                (click)="editCaisse(caiss)"></button>
+                                        </span>
+                                        <span *ngIf="caiss.dg_user !=undefined">
+                                            <button pButton pRipple icon="pi pi-pencil" label="Cloturer"
+                                                    class="p-button-warning mr-2 mb-2"
+                                                    (click)="cloturerNow(caiss)"></button>
+                                        </span>
+
+                                        <button pButton pRipple icon="pi pi-zoom" label="Details"
+                                            class="p-button-primary mr-2 mb-2" (click)="details(caiss)"></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+
+
+                    <p-dialog [(visible)]="caisseDialog" [style]="{width: '450px', height: '30rem'}"
+                        header="Attribution Caisse" [modal]="true" class="p-fluid">
+                        <ng-template pTemplate="content">
+
+                            <div class="field">
+                                <p-autoComplete placeholder="Choisir un utilisateur" [(ngModel)]="userSelected" id="dd"
+                                    [dropdown]="true" [multiple]="false" [suggestions]="listUser" field="libelle"
+                                    (completeMethod)="filterUser($event)"></p-autoComplete>
+
+                            </div>
+
+
+
+
+                        </ng-template>
+
+                        <ng-template pTemplate="footer">
+                            <button pButton pRipple type="button" label="Annuler" icon="pi pi-times"  class="p-button-danger" (click)="hideDialog()"></button>
+                            <button pButton pRipple type="button" label="Enregistrer" icon="pi pi-check"  class="p-button-success" (click)="saveCaisse()"></button>
+                        </ng-template>
+                    </p-dialog>
+
+                    <p-dialog [(visible)]="detailsDialog" [style]="{width: '700px', height: '50rem'}"
+                        header="Information de Base" [modal]="true" class="p-fluid">
+                        <ng-template pTemplate="content">
+
+
+
+                            <br>
+
+                            <span> Libelle Caisse : </span> <span> <b> &nbsp; {{caisse.libelle}}</b> </span>
+                            <br> <br>
+
+                            <span> Numeraire : </span> <span> <b> &nbsp; {{caisse.numeraire}}</b> </span>
+                            <br> <br>
+
+                            <span> cheque : </span> <span> <b> &nbsp; {{caisse.cheque}}</b> </span>
+                            <br> <br>
+
+                            <h3 style="text-align:center"> Historique Caisse</h3>
+                            <br> <br>
+                            <p-table [value]="caisseListHistoriqueCaisse" selectionMode="single" [paginator]="true"
+                                [rows]="5" responsiveLayout="scroll"  sortField="datecloture" [sortOrder]="-1" >
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th pSortableColumn="dateattribution">Date Attribution<p-sortIcon
+                                                field="dateAttribution"></p-sortIcon>
+                                        </th>
+                                        <th pSortableColumn="datecloture">Date Cloture <p-sortIcon field="datecloture">
+                                            </p-sortIcon>
+                                        </th>
+                                        <th pSortableColumn="dg_user.nom">Nom Utilisateur <p-sortIcon
+                                                field="dg_user.nom"></p-sortIcon>
+                                        </th>
+                                        <th pSortableColumn="dg_user.prenom"> Prenom Email <p-sortIcon
+                                                field="dg_user.prenom"></p-sortIcon>
+                                        </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-histo>
+                                    <tr>
+                                        <td style="min-width: 10rem;">
+                                            <span *ngIf="histo.dateattribution !=undefined">
+                                                {{histo.dateattribution | date:'dd-MM-yyyy'}}
+                                            </span>
+                                        </td>
+
+                                        <td style="min-width: 10rem;">
+                                            <span *ngIf="histo.datecloture !=undefined">
+                                                {{histo.datecloture | date:'dd-MM-yyyy' }}
+
+                                            </span>
+                                        </td>
+                                        <td style="min-width: 10rem;">{{histo.dg_user.nom}}</td>
+                                        <td style="min-width: 10rem;">{{histo.dg_user.prenom}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                            <br> <br>
+
+                            <div style="text-align: center" *ngIf="hasCaisse==true">
+
+                                <button pButton pRipple icon="pi pi-zoom" label="Cloturer la Caisse"
+                                    class="p-button-primary mr-2 mb-2" (click)="cloturerCaisse()"></button>
+                            </div>
+
+
+
+
+
+
+                        </ng-template>
+
+                        <ng-template pTemplate="footer">
+                            <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text"
+                                (click)="hideDialog()"></button>
+                            <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text"
+                                (click)="saveCaisse()"></button>
+                        </ng-template>
+                    </p-dialog>
+
+                    <p-dialog [(visible)]="deleteProductDialog" header="Confirm" [modal]="true"
+                        [style]="{width:'450px'}">
+                        <div class="flex align-items-center justify-content-center">
+                            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                            <span *ngIf="product">Are you sure you want to delete <b>{{product.name}}</b>?</span>
+                        </div>
+                        <ng-template pTemplate="footer">
+                            <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No"
+                                (click)="deleteProductDialog = false"></button>
+                            <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes"
+                                (click)="confirmDelete()"></button>
+                        </ng-template>
+                    </p-dialog>
+
+                    <p-dialog [(visible)]="deleteProductsDialog" header="Confirm" [modal]="true"
+                        [style]="{width:'450px'}">
+                        <div class="flex align-items-center justify-content-center">
+                            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                            <span>Are you sure you want to delete selected products?</span>
+                        </div>
+                        <ng-template pTemplate="footer">
+                            <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No"
+                                (click)="deleteProductsDialog = false"></button>
+                            <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes"
+                                (click)="confirmDeleteSelected()"></button>
+                        </ng-template>
+                    </p-dialog>
+
+                    <p-overlayPanel #op2 [showCloseIcon]="true" [style]="{width: '450px'}">
+
+                        <h5>Liste annexes</h5>
+                        <ng-template pTemplate>
+                            <p-table [value]="selectedStructure" selectionMode="single" [paginator]="true" [rows]="5"
+                                (onRowSelect)="op2.hide()" responsiveLayout="scroll">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th pSortableColumn="annexe.libelle">Libelle<p-sortIcon field="annexe.libelle">
+                                            </p-sortIcon>
+                                        </th>
+                                        <th pSortableColumn="annexe.telephone">Telephone <p-sortIcon
+                                                field="annexe.telephone"></p-sortIcon>
+                                        </th>
+                                        <th pSortableColumn="annexe.adresse">Adresse <p-sortIcon field="annexe.adresse">
+                                            </p-sortIcon>
+                                        </th>
+                                        <th pSortableColumn="annexe.email">Email <p-sortIcon field="annexe.email">
+                                            </p-sortIcon>
+                                        </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-structure>
+                                    <tr>
+                                        <td style="min-width: 10rem;">{{structure.annexe.libelle}}</td>
+
+                                        <td style="min-width: 10rem;">{{structure.annexe.telephone}}</td>
+                                        <td style="min-width: 10rem;">{{structure.annexe.adresse}}</td>
+                                        <td style="min-width: 10rem;">{{structure.annexe.email}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </ng-template>
+                    </p-overlayPanel>
+
+                    <br><br>
+                    <div class="grid grid-nogutter justify-content-end">
+                        <button  *ngIf="isbureau==false" mat-raised-button matStepperNext (click)="resetStepper()"  color="warn">Retour </button>
+                    </div>
+                    
+                </mat-step>
+
+            </mat-stepper>
+
+
+
+
+        </div>
+
+
+
+
+
+
+        <div  *ngIf="liststructannexe.length!=0 && isDrp==false" class="card">
+
+            <div>
+                <p-table #dt [value]="liststructannexe" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+                [globalFilterFields]="['libelle','adresse', 'email']"
+                [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+                currentPageReportTemplate="Affichage des {first} aux {last}èmes des  {totalRecords} entrées"
+                [(selection)]="selectedProducts" selectionMode="multiple" [rowHover]="true" dataKey="id">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h3 class="m-0">Liste des Caisses Annexes</h3>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text"
+                                (input)="dt.filterGlobal($event.target.value, 'contains')"
+                                placeholder="Rechercher..." />
+                        </span>
+
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+
+                        <th pSortableColumn="libelle">Libelle <p-sortIcon field="libelle"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="code">Code <p-sortIcon field="code"></p-sortIcon>
+                        </th>
+
+
+
+                        <th>Actions</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-struct>
+                    <tr>
+
+                        <td style="min-width:10rem;"><span class="p-column-title">Libelle</span>
+                            {{struct.annexe.libelle}}
+                        </td>
+                        <td style="min-width:10rem;"><span class="p-column-title">Code</span>
+                            {{struct.annexe.code}}
+                        </td>
+
+
+                        <td style="min-width:8rem;">
+
+                                <button pButton pRipple icon="pi pi-zoom" label="Details"
+                                    class="p-button-primary mr-2 mb-2" (click)="goCaissesAnnexes(struct)"></button>
+
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            </div>
+        </div>
+    </div>

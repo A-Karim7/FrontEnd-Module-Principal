@@ -1,0 +1,103 @@
+
+<style>
+
+@keyframes custom-progress-spinner-color {
+    100%,
+    0% {
+        stroke: #16697A;
+    }
+    40% {
+        stroke: #489FB5;
+    }
+    66% {
+        stroke: #82C0CC;
+    }
+    80%,
+    90% {
+        stroke: #FFA62B;
+    }
+}
+
+.loader-container{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: black;
+    opacity: 0.8;
+    z-index: 99;
+}
+
+</style>
+
+<div class="col-12" >
+    
+    <div class="card">
+        <div *ngIf="loaderService.isLoading | async "  class="loader-container">
+            <h3>Veuillez patienter ....</h3>
+            <p-progressSpinner style="top: 50%; left:50%;position: fixed; " animationDuration=".4s"></p-progressSpinner>
+          
+        </div> 
+
+        <h5>Historique de tous les utilisateurs</h5>
+       
+      
+        <p-table #dt [value]="user" [columns]="cols" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['prenom','nom','dg_structure','matricule']" [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Affichage des {first} aux {last}èmes des  {totalRecords} entrées"  selectionMode="multiple" [rowHover]="true" dataKey="matricule">
+            <ng-template pTemplate="caption">
+                <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                    <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Rechercher..." />
+                        </span>
+                </div>
+            </ng-template>
+            
+           
+            <ng-template pTemplate="header">
+               
+               
+                <tr>
+                    <th pSortableColumn="action">Actions</th>
+                    <th pSortableColumn="utilisateur">Utilisateur </th>
+                    <th pSortableColumn="dg_user.matricule">Matricule </th>
+                    <th pSortableColumn="fonctions">Fonctions </th>
+                    <th pSortableColumn="structures">Structures </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-utilisateur  let-expanded="expanded">
+                <tr>
+                    <td><button type="button" pButton pRipple [pRowToggler]="utilisateur" class="p-button-text p-button-rounded p-button-plain" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" (click)="Historique(utilisateur)" ></button></td>
+                    <td style="min-width:200px;"><span class="p-column-title">Utilisateur</span>{{utilisateur.prenom}} {{utilisateur.nom}}</td>
+                    <td style="min-width:200px;"><span class="p-column-title">Matricule</span>{{utilisateur.matricule}}</td>
+                    <td style="min-width:200px;"><span class="p-column-title">Fontions</span>{{utilisateur.dg_fonction?.libelle}}</td>
+                    <td style="min-width:200px;"><span class="p-column-title">Structures</span>{{utilisateur.dg_structure.libelle}}</td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="rowexpansion" let-utilisateur>
+                <tr>
+                    <td colspan="7">
+                        <div class="p-3">
+                            <p-table [value]="historique" dataKey="id" responsiveLayout="scroll">
+                                <ng-template pTemplate="header">
+                <tr>
+                <th>Date Affectation</th>
+                    <th>Fonctions</th>
+                    <th>Structures</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-modi>
+                <tr>
+                    <td style="min-width:200px;"><span class="p-column-title">Date</span>{{modi.dateTransfert | date:' dd/MM/yyyy, à HH:mm'}}</td>
+                    <td style="min-width:200px;"><span class="p-column-title">Fontions</span>{{modi.dg_fonction_arrivee.libelle}}</td>
+                    <td style="min-width:200px;"><span class="p-column-title">Structures</span>{{modi.dg_structureArr.libelle}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    </td>
+    </tr>
+    </ng-template>
+
+    </p-table>
+
+    </div>
+</div>

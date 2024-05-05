@@ -1,0 +1,259 @@
+<div class="users-content">
+    <div class="card">
+        <div *ngIf="!attente" class="grid justify-content-center p-2 lg:p-0">
+            <h5 class="spinner">Veuillez Patienter...</h5>
+            <p-progressSpinner class="spinner"></p-progressSpinner>
+        </div>
+        <p-table #dt [value]="user" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['nom','prenom','email','telephone','matricule']" [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Affichage des {first} aux {last}èmes des  {totalRecords} entrées" [(selection)]="selectedUsers" selectionMode="multiple" [rowHover]="true" dataKey="id">
+        <ng-template pTemplate="caption">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                <h5 class="m-0">{{titre}}  </h5>
+                <span class="block mt-2 md:mt-0 p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Rechercher..." />
+        </span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 3rem"></th>
+                    <th pSortableColumn="nom">Nom <p-sortIcon field="nom"></p-sortIcon></th>
+                    <th pSortableColumn="prenom">Prenom <p-sortIcon field="prenom"></p-sortIcon></th>
+                    <th pSortableColumn="role">Role <p-sortIcon field="role"></p-sortIcon></th>
+                    <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+                    <th pSortableColumn="telephone">Telephone <p-sortIcon field="telephone"></p-sortIcon></th>
+                    <th pSortableColumn="matricule">Matricule <p-sortIcon field="matricule"></p-sortIcon></th>
+                    <th pSortableColumn="reference">Reference <p-sortIcon field="reference"></p-sortIcon></th>
+                    <th pSortableColumn="fonction">Fonction <p-sortIcon field="fonction"></p-sortIcon></th>
+
+                    <th pSortableColumn="enable">Etat User <p-sortIcon field="enable"></p-sortIcon></th>
+                    <th>Action</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-user>
+                <tr>
+                    <td></td>
+                    <td style="min-width:10rem;"><span class="p-column-title">Nom</span>
+                        {{user.nom}}
+                    </td>
+                    <td style="min-width:10rem;">
+                        <span class="p-column-title">Prenom</span>
+                        {{user.prenom}}
+                    </td>
+                    <td style="min-width:10rem;">
+                        <span class="p-column-title">Role</span>
+                        <span *ngFor="let ro of user.roles">
+                        {{ro.authority}}, &nbsp;
+
+                </span>
+                    </td>
+                    <td style="min-width:10rem;">
+                        <span class="p-column-title">Email</span>
+                        {{user.email}}
+                    </td>
+                    <td style="min-width:10rem;">
+                        <span class="p-column-title">Telephone</span>
+                        {{user.telephone}}
+                    </td>
+                    <td style="min-width:10rem;">
+                        <span class="p-column-title">Matricule</span>
+                        {{user.matricule}}
+                    </td>
+                    <td style="min-width:10rem;">
+                        <span class="p-column-title">Reference</span>
+                        {{user.reference}}
+                    </td>
+                    <td style="min-width:10rem;">
+                        <span class="p-column-title">Fonction</span>
+                        <div *ngIf="user.dg_fonction">
+                            {{user.dg_fonction.libelle}}
+                        </div>
+                        <div *ngIf="!user.dg_fonction">
+                        </div>
+                    </td>
+                    <td style="min-width:10rem;">
+                        <span class="p-column-title">Etat user</span>
+                        <div *ngIf="user?.enable==true">
+                            Actif
+                        </div>
+                        <div *ngIf="user?.enable==false">
+                        Inactif
+                        </div>
+                    </td>
+                    <td>
+
+                            <button pButton pRipple icon="pi pi-search" class="p-button-rounded p-button-success mr-2 mb-2" (click)="nextPage(user)"></button>
+
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+        <br> <br>
+
+        <div   class="col-12 md:col-6" *ngIf="annexes.length!=0">
+
+
+        <p-table #dt [value]="annexes" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+        [globalFilterFields]="['libelle','adresse', 'email']"
+        [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+        currentPageReportTemplate="Affichage des {first} aux {last}èmes des  {totalRecords} entrées"
+        [(selection)]="selectedProducts" selectionMode="multiple" [rowHover]="true" dataKey="id">
+        <ng-template pTemplate="caption">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                <h5 class="m-0">Liste des  Annexes</h5>
+                <span class="block mt-2 md:mt-0 p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text"
+                        (input)="dt.filterGlobal($event.target.value, 'contains')"
+                        placeholder="Rechercher..." />
+                </span>
+
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+
+                <th pSortableColumn="libelle">Libelle <p-sortIcon field="libelle"></p-sortIcon>
+                </th>
+                <th pSortableColumn="code">Code <p-sortIcon field="code"></p-sortIcon>
+                </th>
+
+
+
+                <th>Actions</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-struct>
+            <tr>
+
+                <td style="min-width:10rem;"><span class="p-column-title">Libelle</span>
+                    {{struct.annexe.libelle}}
+                </td>
+                <td style="min-width:10rem;"><span class="p-column-title">Code</span>
+                    {{struct.annexe.code}}
+                </td>
+
+
+                <td style="min-width:8rem;">
+
+                        <button pButton pRipple icon="pi pi-zoom" label="Details"
+                            class="p-button-primary mr-2 mb-2" (click)="showdialog(struct)"></button>
+
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+
+
+    <p-dialog header="Liste des Utilisateurs" [resizable]="false" [modal]="true" [maximizable]="true" appendTo="body" [(visible)]="dialogVisible" [style]="{width: '95vw'}" [contentStyle]="{height: '500px'}">
+
+    <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+            <div class="my-2">
+                <button pButton pRipple label="Nouveau" *ngIf="findRole(['ROLE_SUPERADMIN','ROLE_DER','ROLE_DRP'])" icon="pi pi-plus" class="p-button-primary mr-2" (click)="openNew2()"></button>
+           </div>
+        </ng-template>
+
+
+        <ng-template pTemplate="right">
+
+            <button pButton pRipple label="Export PDF" icon="pi pi-upload" class="p-button-primary mr-2 " (click)="dt.exportCSV()"></button>
+            <button pButton pRipple label="Export Excel " icon="pi pi-upload" class="p-button-success" (click)="dt.exportCSV()"></button>
+
+        </ng-template>
+    </p-toolbar><p-table #dtt [value]="utilisateurs" [columns]="cols" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['prenom','nom','telephone','email','matricule']" [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Affichage des {first} aux {last}èmes des  {totalRecords} entrées"  selectionMode="multiple" [rowHover]="true" dataKey="id">
+        <ng-template pTemplate="caption">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                <h5 class="m-0">{{titre2}}</h5>
+                <span class="block mt-2 md:mt-0 p-input-icon-left">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" (input)="dtt.filterGlobal($event.target.value, 'contains')" placeholder="Search..." />
+                    </span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 3rem"></th>
+                <th pSortableColumn="nom">Nom <p-sortIcon field="nom"></p-sortIcon></th>
+                <th pSortableColumn="prenom">Prenom <p-sortIcon field="prenom"></p-sortIcon></th>
+                <th pSortableColumn="role">Role <p-sortIcon field="role"></p-sortIcon></th>
+                <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+                <th pSortableColumn="telephone">Telephone <p-sortIcon field="telephone"></p-sortIcon></th>
+                <th pSortableColumn="matricule">Matricule <p-sortIcon field="matricule"></p-sortIcon></th>
+                <th pSortableColumn="reference">Reference <p-sortIcon field="reference"></p-sortIcon></th>
+                <th pSortableColumn="fonction">Fonction <p-sortIcon field="fonction"></p-sortIcon></th>
+            <th pSortableColumn="enable">Etat User <p-sortIcon field="enable"></p-sortIcon></th>
+
+                <th>Actions</th>
+
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+        <tr>
+            <td></td>
+            <td style="min-width:10rem;"><span class="p-column-title">Nom</span>
+                {{user.nom}}
+            </td>
+            <td style="min-width:10rem;">
+                <span class="p-column-title">Prenom</span>
+                {{user.prenom}}
+            </td>
+            <td style="min-width:10rem;">
+                <span class="p-column-title">Role</span>
+                <span *ngFor="let ro of user.roles">
+                {{ro.authority}}, &nbsp;
+
+        </span>
+            </td>
+            <td style="min-width:10rem;">
+                <span class="p-column-title">Email</span>
+                {{user.email}}
+            </td>
+            <td style="min-width:10rem;">
+                <span class="p-column-title">Telephone</span>
+                {{user.telephone}}
+            </td>
+            <td style="min-width:10rem;">
+                <span class="p-column-title">Matricule</span>
+                {{user.matricule}}
+            </td>
+            <td style="min-width:10rem;">
+                <span class="p-column-title">Reference</span>
+                {{user.reference}}
+            </td>
+            <td style="min-width:10rem;">
+                <span class="p-column-title">Fonction</span>
+                <div *ngIf="user.dg_fonction">
+                    {{user.dg_fonction.libelle}}
+                </div>
+                <div *ngIf="!user.dg_fonction">
+                </div>
+            </td>
+            <td style="min-width:10rem;">
+            <span class="p-column-title">Enable</span>
+            <div *ngIf="user?.enable==true">
+                Actif
+            </div>
+            <div *ngIf="user?.enable==false">
+            Inactif
+            </div>
+        </td>
+            <td>
+             <span>
+                <button pButton pRipple icon="pi pi-search" class="p-button-rounded p-button-success mr-2 mb-2" (click)="nextPage(user)"></button>
+             </span>
+            </td>
+        </tr>
+        </ng-template>
+    </p-table>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple icon="pi pi-times" type="button" label="Fermer" class="p-button-danger p-button-text" (click)="hideDialog()"></button>
+    </ng-template>
+</p-dialog>
+
+        </div>
+        <div>
+            <p-button label="Précèdent" (onClick)="prevPage()" icon="pi pi-angle-left" iconPos="left"></p-button>
+        </div>
+    </div>
+</div>

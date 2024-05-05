@@ -1,0 +1,159 @@
+
+
+<p-card header="Information de la Structure" [style]="{'width': '50rem', 'margin-bottom': '2em'}" styleClass="styleClass">
+
+
+  <ng-template pTemplate="content">
+
+    <div class="container">
+    <div class="row">
+      <span class="col-2">Libelle  </span> <span class="col-2"> <b> {{structure.libelle}}</b> </span>
+    </div>
+    <br>
+
+    <div class="row">
+      <span class="col-2">Adresse  </span> <span class="col-2"> <b> {{structure.adresse}}</b> </span>
+    </div>
+    <br>
+    <div class="row">
+      <span class="col-2">Email </span> <span class="col-2"> <b> {{structure.email}}</b> </span>
+    </div>
+    <br>
+    <div class="row">
+      <span class="col-2">Telephone  </span> <span class="col-2"> <b> {{structure.telephone}}</b> </span>
+    </div>
+    <br>
+    <div class="row">
+      <span class="col-2">Code</span> <span class="col-2"> <b> {{structure.code}}</b> </span>
+    </div>
+    <br>
+    <div class="row">
+      <span class="col-2">Code Postal</span> <span class="col-2"> <b> {{structure.codepostal}}</b> </span>
+    </div>
+    <br>
+    <div class="row">
+      <span class="col-2">Code Ips </span> <span class="col-2"> <b> {{structure.codeips}}</b> </span>
+    </div>
+    <br>
+
+  </div>
+  </ng-template>
+
+
+</p-card>
+
+<span *ngIf=" isEmpty==true">
+
+<p-card [style]="{'width': '50rem', 'margin-bottom': '2em'}">
+
+  Cette structure ne possède pas d'annexes
+  <p-footer>
+      <button pButton pRipple type="button" label="Ajouter Annexe" icon="pi pi-plus"  class="p-button-success" (click)="openDialog()"></button>
+  </p-footer>
+</p-card>
+</span>
+
+
+<span *ngIf=" isEmpty== false">
+
+<p-card header="Liste des Annexes"  [style]="{width: 'width'}" styleClass="styleClass">
+
+ <p-table  [value]="listannexes" responsiveLayout="scroll">
+
+   <ng-template pTemplate="header">
+     <tr>
+       <th>Libelle </th>
+        <th>Adresse </th>
+        <th>Email </th>
+        <th>Telephone </th>
+        <th>Code </th>
+        <th>Code Postal </th>
+        <th>Code Ips </th>
+
+
+     </tr>
+   </ng-template>
+   <ng-template pTemplate="body" let-structure>
+     <tr>
+        <td>{{structure.annexe.libelle}}</td>
+        <td>{{structure.annexe.adresse}}</td>
+        <td>{{structure.annexe.email}}</td>
+        <td>{{structure.annexe.telephone}}</td>
+        <td>{{structure.annexe.code}}</td>
+        <td>{{structure.annexe.codepostal}}</td>
+        <td>{{structure.annexe.codeips}}</td>
+     </tr>
+   </ng-template>
+
+
+ </p-table>
+
+
+  <p-footer>
+    <button pButton pRipple type="Primary" label="Ajouter Annexe(s)" (click)="openDialog()" class="mr-2 mb-2"></button>
+
+  </p-footer>
+</p-card>
+
+</span>
+
+
+
+<p-dialog [(visible)]="ajoutDialog" [style]="{width: '450px'}" header="Ajout Annexe" [modal]="true" class="p-fluid">
+  <ng-template pTemplate="content">
+
+
+     <div class="p-formgrid grid">
+                <div class="field col ">
+          <label for="libelle">Libelle  <span style="color: red"> *</span></label>
+          <input type="text" pInputText id="libelle" [(ngModel)]="annexe.libelle" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !annexe.libelle}"/>
+          <small class="ng-dirty ng-invalid" *ngIf="submitted && !annexe.libelle">Libelle est obligatoire.</small>
+      </div>
+      <div class="field">
+          <label for="adresse">Adresse  <span style="color: red"> *</span></label>
+          <textarea pInputTextarea id="adresse"  [(ngModel)]="annexe.adresse" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !annexe.adresse}"></textarea>
+          <small class="ng-dirty ng-invalid" *ngIf="submitted && !annexe.adresse">Adresse est obligatoire.</small>
+      </div>
+      </div>
+      <div class="p-formgrid grid">
+        <div class="field col ">
+          <label for="email">Email </label>
+          <input type="text" pInputText id="email" [(ngModel)]="annexe.email" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !annexe.email}"/>
+
+      </div>
+      <div class="field">
+          <label for="telephone">Téléphone </label>
+          <input type="text" pInputText id="telephone" [(ngModel)]="annexe.telephone" pattern="[0-9]{5}" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !annexe.telephone}"/>
+
+      </div>
+      </div>
+      <div class="p-formgrid grid">
+        <div class="field col ">
+          <label for="code">Code <span style="color: red"> *</span></label>
+          <input type="text" pInputText id="code" [(ngModel)]="annexe.code" pattern="[0-9]{5}"  pattern="[0-9]{5}" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !annexe.code}"/>
+          <small class="ng-dirty ng-invalid" *ngIf="submitted && !annexe.code">Code est obligatoire.</small>
+      </div>
+      <div class="field">
+          <label for="codepostal">Code Postal</label>
+          <input type="text" pInputText id="codeposal" [(ngModel)]="annexe.codepostal"  pattern="[0-9]{5}" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !annexe.codepostal}"/>
+
+      </div>
+      </div>
+      <div class="p-formgrid grid">
+        <div class="field col ">
+          <label for="codeips">Code IPS</label>
+          <input type="text" pInputText id="codeips" [(ngModel)]="annexe.codeips" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !annexe.codeips}"/>
+
+      </div>
+      </div>
+
+
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+      <button pButton pRipple type="button" label="Annuler" icon="pi pi-times"  class="p-button-danger" (click)="hideDialog()"></button>
+      <button pButton pRipple type="button" label="Enregistrer" icon="pi pi-check"  class="p-button-success"  (click)="saveAnnexe()"></button>
+  </ng-template>
+</p-dialog>
+
+

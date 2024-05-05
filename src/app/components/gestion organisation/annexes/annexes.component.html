@@ -1,0 +1,295 @@
+
+
+<!--
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+
+            
+    
+            <p-toast></p-toast>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label= icon="pi pi-plus" class="p-button-primary mr-2" (click)="openNew()"></button>
+                        <button pButton pRipple label= icon="pi pi-briefcase" class="p-button-secondary" (click)="opentypeDialog()"></button>
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="right">
+                    
+                    <button pButton pRipple label="Export PDF" icon="pi pi-upload" class="p-button-primary mr-2 " (click)="dt.exportCSV()"></button>
+                    <button pButton pRipple label="Export Excel " icon="pi pi-upload" class="p-button-success" (click)="dt.exportCSV()"></button>
+
+                </ng-template>
+            </p-toolbar>
+
+            <p-table #dt [value]="annexes" [columns]="cols" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['libelle','adresse','email','telephone','code','codepostal','codeips','dg_drp.libelle','dg_typeStructure.libelle']" 
+            [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Affichage des {first} aux {last}èmes des  {totalRecords} entrées" 
+            [(selection)]="selectedProducts" selectionMode="multiple" [rowHover]="true" dataKey="id" sortField="libelle" [sortOrder]="-1"            >
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Liste de toutes les Structures</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Rechercher..." />
+                        </span>
+                        
+                        <span>
+                           
+                            <p-dropdown id="drp_filter" [options]="listDrps" optionLabel="libelle" [(ngModel)]="selectedDrp" (onChange)="selectDrp()" placeholder="Filtrer Drp...">
+                            </p-dropdown>
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>     
+                        </th>
+                        <th pSortableColumn="libelle">Libelle <p-sortIcon field="libelle"></p-sortIcon></th>
+                        <th pSortableColumn="adresse">Adresse <p-sortIcon field="adresse"></p-sortIcon></th>
+                        <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+                        <th pSortableColumn="telephone">Telephone <p-sortIcon field="telephone"></p-sortIcon></th> 
+                        <th pSortableColumn="code">Code <p-sortIcon field="code"></p-sortIcon></th> 
+                        <th pSortableColumn="codepostal">Code Postal <p-sortIcon field="code"></p-sortIcon></th> 
+                        <th pSortableColumn="codeips">Code IPS <p-sortIcon field="codeips"></p-sortIcon></th> 
+                        <th pSortableColumn="bureau">Bureau <p-sortIcon field="bureau"></p-sortIcon></th>
+                        <th pSortableColumn="dg_drp.libelle">DRP <p-sortIcon field="dg_drp.libelle"></p-sortIcon></th> 
+                        
+
+                        
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-annexe>
+                    <tr>
+                        <td>
+                            <p-tableCheckbox [value]="structure"></p-tableCheckbox>
+                        </td>
+                        <td style="min-width:10rem;"><span class="p-column-title">Libelle</span>
+                            {{annexe.annexe.libelle}}
+                        </td>
+                        <td style="min-width:10rem;">
+                            <span class="p-column-title">Adresse</span>
+                            {{annexe.annexe.adresse}}
+                        </td>
+                        <td style="min-width:8rem;">
+                            <span class="p-column-title">Email</span>
+                            {{annexe.annexe.email}}
+                        </td>
+                        <td style="min-width:10rem;">
+                            <span class="p-column-title">Telephone</span>
+                            {{annexe.annexe.telephone}}
+                        </td>
+                        <td style="min-width:10rem;">
+                            <span class="p-column-title">Code</span>
+                            {{annexe.annexe.code}}
+                        </td>
+                        <td style="min-width:10rem;">
+                            <span class="p-column-title">Code Postal</span>
+                            {{annexe.annexe.codepostal}}
+                        </td>
+                        <td style="min-width:10rem;">
+                            <span class="p-column-title">Code Ips</span>
+                            {{annexe.annexe.codeips}}
+                        </td>
+                        <td style="min-width:10rem;">
+                            <span class="p-column-title">Bureau</span>
+                            {{annexe.bureau.libelle}}
+                        </td>
+                        <td style="min-width:10rem;">
+                            <span class="p-column-title">TypeStructure</span>
+                            {{annexe.bureau.dg_drp.libelle}}
+                        </td>
+                       
+                        
+                        <td>
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-primary mr-2" (click)="editProduct(annexe)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog [(visible)]="annexeDialog" [style]="{width: '450px'}" header="Détails Structure" [modal]="true" class="p-fluid">
+            <ng-template pTemplate="content">
+                <div class="field">
+                    <label for="libelle">Libelle</label>
+                    <input type="text" pInputText id="libelle" [(ngModel)]="annexe.annexe.libelle" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !annexe.libelle}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !annexe.annexe.libelle">Libelle est obligatoire.</small>
+                </div>
+                <div class="field">
+                    <label for="adresse">Adresse</label>
+                    <textarea pInputTextarea id="adresse"  [(ngModel)]="annexe.annexe.adresse" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !annexe.adresse}"></textarea>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !annexe.annexe.adresse">Adresse est obligatoire.</small>
+                </div>
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="text" pInputText id="email" [(ngModel)]="annexe.annexe.email" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !annexe.email}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !annexe.annexe.email">Email est obligatoire.</small>
+                </div>
+                <div class="field">
+                    <label for="telephone">Téléphone</label>
+                    <input type="text" pInputText id="telephone" [(ngModel)]="annexe.annexe.telephone" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !annexe.telephone}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !annexe.annexe.telephone">Telephone est obligatoire.</small>
+                </div>
+                <div class="field">
+                    <label for="code">Code</label>
+                    <input type="text" pInputText id="code" [(ngModel)]="annexe.annexe.code" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !annexe.code}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !annexe.annexe.code">Code est obligatoire.</small>
+                </div>
+                <div class="field">
+                    <label for="codepostal">Code Postal</label>
+                    <input type="text" pInputText id="codeposal" [(ngModel)]="annexe.annexe.codepostal" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !annexe.codepostal}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !annexe.annexe.codepostal">Code Postal est obligatoire.</small>
+                </div>
+                <div class="field">
+                    <label for="codeips">Code IPS</label>
+                    <input type="text" pInputText id="codeips" [(ngModel)]="annexe.annexe.codeips" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !annexe.codeips}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !annexe.annexe.codeips">Code IPS est obligatoire.</small>
+                </div>
+                <div class="field">
+                    <label for="bureau">Bureau</label>
+                    <input type="text" pInputText id="bureau" [(ngModel)]="annexe.annexe.libelle" required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !annexe.libelle}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !annexe.annexe.libelle">Bureau est obligatoire.</small>
+                </div>
+               
+                <div class="field">
+                    <label for="DRP">DRP</label>
+                    <p-dropdown id="drp" [options]="listDrps" optionLabel="libelle" [(ngModel)]="annexe.dg_drp" placeholder="Drp...">
+                    </p-dropdown>
+
+
+                </div>
+
+                <div class="field">
+                    <label for="typeStructure">Type Structure</label>
+                    <p-dropdown  id="typeStructure" [options]="listTypeStructures" optionLabel="libelle" [(ngModel)]="annexe.dg_typeStructure" placeholder="Type Structure...">
+                    </p-dropdown>
+                </div>
+
+                
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+                <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveProduct()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deleteProductDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span *ngIf="product">Are you sure you want to delete <b>{{product.name}}</b>?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteProductDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDelete()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog [(visible)]="deleteProductsDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span>Are you sure you want to delete selected products?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteProductsDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDeleteSelected()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-overlayPanel #op2 [showCloseIcon]="true" [style]="{width: '450px'}">
+
+            <h5>Liste annexes</h5>
+            <ng-template pTemplate>
+                <p-table [value]="selectedStructure" selectionMode="single"  [paginator]="true" [rows]="5" (onRowSelect)="op2.hide()" responsiveLayout="scroll">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th pSortableColumn="annexe.libelle">Libelle<p-sortIcon field="annexe.libelle"></p-sortIcon></th>
+                            <th pSortableColumn="annexe.telephone">Telephone <p-sortIcon field="annexe.telephone"></p-sortIcon></th>
+                            <th pSortableColumn="annexe.adresse">Adresse <p-sortIcon field="annexe.adresse"></p-sortIcon></th>
+                            <th pSortableColumn="annexe.email">Email <p-sortIcon field="annexe.email"></p-sortIcon></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-structure>
+                        <tr >
+                            <td style="min-width: 10rem;">{{structure.annexe.libelle}}</td>
+                            
+                            <td style="min-width: 10rem;">{{structure.annexe.telephone}}</td>
+                            <td style="min-width: 10rem;">{{structure.annexe.adresse}}</td>
+                            <td style="min-width: 10rem;">{{structure.annexe .email}}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </ng-template>
+        </p-overlayPanel>
+
+<p-dialog header="Gestion Type de Structures" [(visible)]="typeDialog" [modal]="true" [responsive]="true" [style]="{width: '30Orem', minWidth: '100rem'}"
+[maximizable]="true" >
+
+<ng-template pTemplate="content">
+
+    <div class="card"  [style]="{'width': '50rem', 'margin-bottom': '2em'}">
+        <h5>Ajout Type Structure </h5>
+        
+        <div class="field">
+            <label for="libelleTypeStructure">Libelle</label> &nbsp;
+            <input type="text" pInputText id="libelleTypeStructure" [(ngModel)]="typeStructure.libelle" name="libelleTypeStructure"  required  [ngClass]="{'ng-invalid ng-dirty' : submitted && !typeStructure.libelle}"/>
+            <small class="ng-dirty ng-invalid" *ngIf="submitted && !structure.libelle">Libelle est obligatoire.</small>
+        </div>
+
+        <button pButton label="Ajouter" (click)="saveTypeStructure()"></button>
+    </div>
+
+
+    <div class="card"  [style]="{'width': '100rem', 'margin-bottom': '2em'}">
+        <h5>Liste Types Structures </h5>
+        
+        <p-table [value]="listTypeStructures" dataKey="id" editMode="row" responsiveLayout="scroll">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Libelle</th>
+                    <th style="width:16rem"></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-typeStruct let-editing="editing" let-ri="rowIndex">
+                <tr [pEditableRow]="typeStruct">
+                    <td>
+                        <p-cellEditor>
+                            <ng-template pTemplate="input">
+                                <input pInputText style="width: 50%;" type="text" [(ngModel)]="typeStruct.libelle">
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                                {{typeStruct.libelle}}
+                            </ng-template>
+                        </p-cellEditor>
+                    </td>
+                    <td style="text-align:center">
+                        <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow (click)="initTypeStruct(typeStruct)" icon="pi pi-pencil"  class="p-button-rounded p-button-text"></button>
+                        <button *ngIf="!editing" pButton pRipple type="button"  icon="pi pi-trash"  class="p-button-rounded p-button-text"></button>
+                        <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="editTypeStruct(typeStruct)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                        <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times" (click)="cancel(typeStruct)" class="p-button-rounded p-button-text p-button-danger"></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+
+        
+    </div>
+     
+</ng-template>
+
+    
+    
+</p-dialog>
+
+        
+
+    </div>
+</div>
+
+-->

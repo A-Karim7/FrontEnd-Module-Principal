@@ -1,0 +1,101 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <p-toast></p-toast>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label="Nouveau" icon="pi pi-plus" class="p-button-primary mr-2" (click)="openNew()"></button>
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="right">
+                    <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload>
+                    <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="dt.exportCSV()"></button>
+                </ng-template>
+            </p-toolbar>
+
+            <p-table #dt [value]="services"  responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['id','libelle']" [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Affichage des {first} aux {last} of {totalRecords} entrées"  [rowHover]="true" dataKey="id">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">Liste des Services</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Rechercher..." />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        
+                      
+                        <th pSortableColumn="name">Libelle <p-sortIcon field="libelle"></p-sortIcon></th>
+                       
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-service>
+                    <tr>
+                       
+                      
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Libelle</span>
+                            {{service.libelle}}
+                       
+                        <td style="width:14%; min-width:10rem">
+                          
+                                
+                                <button pButton class="p-button-secondary" pRipple type="button" label="Modifier" (click)="editservice(service)"></button>
+                               
+                            
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <p-dialog [(visible)]="serviceDialog" [style]="{width: '900px'}" header="Détails services" [modal]="true" class="p-fluid">
+          
+            <form #f="ngForm" [formGroup]="form" (ngSubmit)="onSubmit()"> 
+           
+                
+               
+               
+
+                <div class="form-group col-12 ">
+                    <label for="libelle">Libelle</label>
+                    <input type="text" formControlName="libelle" pInputText id="libelle" ngModel="{{service?.libelle}}"   [ngClass]="{'ng-invalid ng-dirty' : submitted && form.controls.libelle.status=='INVALID'}"/>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && form.controls.libelle.status=='INVALID'">Veuillez saisir le libelle SVP.</small>
+                </div>
+                
+              
+
+
+               
+        <table>
+            <tr>
+                <th>
+                    <button pButton pRipple type="button" label="Enregistrer" (click)="onSubmit()"></button>
+                </th>
+                
+                <th>
+                    <button type="submit" pButton pRipple type="button" label="Annuler" (click)="hideDialog()" class="p-button-secondary"></button>  
+                </th>
+            </tr>
+           
+           
+        </table>
+                    
+            
+                      
+                        
+
+              
+         
+        </form>
+  
+        </p-dialog>
+
+       
+    </div>
+</div>
